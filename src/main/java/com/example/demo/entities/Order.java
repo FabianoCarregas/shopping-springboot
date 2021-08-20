@@ -6,13 +6,16 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.example.demo.enums.OrderStatus;
@@ -32,6 +35,10 @@ public class Order implements Serializable {
 	private Instant moment;
 	
 	private Integer orderStatus;
+	
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+	private Payment payment;
+	
 
 	
 	@JsonIgnore
@@ -95,6 +102,23 @@ public class Order implements Serializable {
 		this.orderStatus = orderStatus.getCode();
 		}
 	}
+	
+	public Payment getPayment() {
+		return payment;
+	}
+
+	public void setPayment(Payment payment) {
+		this.payment = payment;
+	}
+	
+	public Double getTotal() {
+		double sum = 0.0;
+		for(OrderItem x : items) {
+			sum += x.getSubTotal();
+		}
+		return sum;
+	}
+
 
 	@Override
 	public int hashCode() {
@@ -113,6 +137,7 @@ public class Order implements Serializable {
 		return Objects.equals(id, other.id);
 	}
 
+	
 	
 	
 
